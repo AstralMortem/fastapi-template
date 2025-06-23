@@ -4,13 +4,48 @@ Ready to use fastapi template for backend developing
 
 ## Features:
 
- - Async SQLAlchemy ORM out the box.
- - User authentication on JWT tokens.
- - Role-based access controll support.
- - Class-based view with deep Auth(RBAC) integration.
+ - Async `SQLAlchemy` ORM out the box.
+ - User authentication on `JWT` tokens.
+ - `Role-Based Access Controll` support.
+ - `Class-Based View` with deep Auth(RBAC) integration.
  - Ready to use routes(login, signup, users crud, etc.)
- - Service-Repository pattern with full type hinting under the hood.
- - Simple CLI managment powered by `Typer`
+ - `Service-Repository pattern` with full type hinting under the hood.
+ - Simple `CLI` managment powered by `Typer`
+
+
+## View Example 
+
+``` python
+from project.core.cbv import View
+from project.core.security import HasPermission, Action
+from project.schemas import AccessToken
+from fastapi import Depends, FastAPI
+
+class TestView(View):
+    prefix = "/tests"
+    tags = ["Test"]
+    resource = "test" # For permission table
+
+    # Annotation to service dependency, like:  
+    # TestServiceDep = Annotated[TestService, Depends(get_test_service)]
+    service: TestServiceDep 
+
+    @View.get("/")
+    async def get_test(self):
+        return {"Hello": "World"}
+
+    # Protected route. If user have test:read permission, can retrieve token
+    @View.get("/protected", response_model = AccessToken)
+    async def get_protected(self, token: AccessToken = Depends(HasPermission(Action.READ))):
+        return token
+
+app = FastAPI()
+
+app.include_router(TestView.as_router())
+
+```
+
+
 
 # Code Guideline
 

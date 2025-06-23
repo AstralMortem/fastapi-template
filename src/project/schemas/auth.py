@@ -5,7 +5,7 @@ from project.utils.jwts import JWTPayload
 class AccessToken(JWTPayload):
     email: str
     permissions: list[str] = []
-    role: str = []
+    role: str 
 
 
 class TokenResponse(Schema):
