@@ -1,0 +1,30 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.indexing": true,
+    "python.analysis.autoIndent": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.completeFunctionParens": false,
+    "python.analysis.inlayHints.callArgumentNames": "partial",
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+
+    "python.analysis.packageIndexDepths": [
+        {
+            "name": "fastapi",
+            "depth": 3
+        },
+        {
+            "name": "sqlalchemy",
+            "depth": 3
+        },
+        {
+            "name": "sqlalchemy.ext.asyncion",
+            "depth": 2
+        },
+        {
+            "name": "pydantic",
+            "depth": 3
+        }
+    ]
+}
