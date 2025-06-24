@@ -1,4 +1,3 @@
-from tkinter import N
 from typer import Typer
 from project.config import settings
 from pathlib import Path

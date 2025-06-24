@@ -20,6 +20,7 @@ class PermissionUpdate(UpdateSchema):
 class RoleRead(ReadSchema):
     id: int
     name: str
+    permissions: list[PermissionRead]
 
 
 class RoleCreate(CreateSchema):

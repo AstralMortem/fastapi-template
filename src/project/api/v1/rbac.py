@@ -14,6 +14,7 @@ from project.schemas import (
 class RoleView(View):
     prefix = "/roles"
     tags = ["RBAC"]
+    resource = 'roles'
 
     auto_guard = True
     service: RoleServiceDep
@@ -32,7 +33,7 @@ class RoleView(View):
 
     @View.patch("/{role_id}", response_model=RoleRead)
     async def update_role(self, role_id: int, role: RoleUpdate):
-        return await self.service.update(role_id, role)
+        return await self.service.patch(role_id, role)
 
     @View.delete("/{role_id}", response_model=RoleRead)
     async def delete_role(self, role_id: int):
@@ -42,6 +43,7 @@ class RoleView(View):
 class PermissionView(View):
     prefix = "/permissions"
     tags = ["RBAC"]
+    resource = 'permissions'
 
     auto_guard = True
     service: PermissionServiceDep
@@ -60,7 +62,7 @@ class PermissionView(View):
 
     @View.patch("/{permission_id}", response_model=PermissionRead)
     async def update_permission(self, permission_id: int, permission: PermissionUpdate):
-        return await self.service.update(permission_id, permission)
+        return await self.service.patch(permission_id, permission)
 
     @View.delete("/{permission_id}", response_model=PermissionRead)
     async def delete_permission(self, permission_id: int):

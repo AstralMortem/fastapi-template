@@ -13,7 +13,7 @@ from typing import Annotated, Any
 from project.repositories import UserRepoDep
 
 
-class AuthService(GenericService[IUserRepository]):
+class AuthService(GenericService[IUserRepository, User, uuid.UUID]):
     def __init__(
         self,
         user_repo: IUserRepository,

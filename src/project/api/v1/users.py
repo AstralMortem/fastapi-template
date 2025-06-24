@@ -7,6 +7,8 @@ from fastapi import Depends
 
 import uuid
 
+from project.schemas.auth import AccessToken
+
 
 class UserView(View):
     prefix = "/users"
@@ -18,15 +20,16 @@ class UserView(View):
     auth_service: AuthServiceDep
 
     @View.get("/me", response_model=UserRead)
-    async def get_current_user(self, user: User = UserDepends(Authorization())):
-        return user
+    async def get_current_user(self, token: AccessToken = Depends(Authorization())):
+        return await self.auth_service.get_current_user(token.sub)
 
     @View.patch("/me", response_model=UserRead)
     async def update_current_user(
-        self, payload: UserUpdate, user: User = UserDepends(Authorization())
+        self, payload: UserUpdate, token: AccessToken = Depends(Authorization())
     ):
-        return await self.auth_service.update(user, UserUpdate, True)
-
+        user = await self.auth_service.get_current_user(token.sub)
+        return await self.auth_service.update(user, payload)
+    
     @View.get("/{user_id}", response_model=UserRead)
     async def get_user(self, user_id: uuid.UUID):
         return await self.service.get(user_id)

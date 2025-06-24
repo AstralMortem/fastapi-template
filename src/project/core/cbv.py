@@ -25,6 +25,8 @@ import inspect
 from project.core.security import Authorization, Action, HasPermission
 from fastapi.types import IncEx
 
+from project.schemas.auth import AccessToken
+
 
 __VIEW_CLASS__ = "__VIEW_CLASS__"
 __VIEW_ROUTE__ = "__VIEW_ROUTE__"
@@ -207,14 +209,22 @@ class View:
 
             old_params.append(
                 inspect.Parameter(
-                    name="security",
-                    kind=inspect.Parameter.KEYWORD_ONLY,
+                    name="_",
+                    annotation=AccessToken,
+                    kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                     default=Depends(guardian),
                 )
             )
 
-        new_signature = inspect.Signature(old_params)
-        return with_signature(new_signature)(func)
+        new_signature = old_sig.replace(parameters=old_params)
+
+        @with_signature(new_signature)
+        async def new_func(*args, **kwargs):
+            kwargs.pop('_', None)
+            return await func(*args, **kwargs)
+
+        # return with_signature(new_signature)(func)
+        return new_func
 
     @classmethod
     def get(cls, path: str, **kwargs: Unpack[RouterParams]):

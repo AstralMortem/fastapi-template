@@ -1,5 +1,5 @@
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, OAuth2PasswordBearer, HTTPBearer
 from project.config import settings
 from .exceptions import BackendException, http_status
 from project.services import AuthServiceDep
@@ -7,7 +7,7 @@ from project.schemas.auth import AccessToken
 from enum import StrEnum
 
 auth_key = OAuth2PasswordBearer(tokenUrl=settings.LOGIN_URL_ENDPOINT, auto_error=False)
-
+bearer = HTTPBearer(auto_error=False)
 
 class Action(StrEnum):
     CREATE = "create"
@@ -31,6 +31,8 @@ class Authorization:
     def _verify_tokens(self, *tokens) -> str:
         for token in tokens:
             if token is not None:
+                if isinstance(token, HTTPAuthorizationCredentials):
+                    return token.credentials
                 return token
         raise BackendException(
             http_status.HTTP_401_UNAUTHORIZED, "Not authenticated", "Token not set"
@@ -40,13 +42,21 @@ class Authorization:
         self,
         service: AuthServiceDep,
         auth_token: str | None = Depends(auth_key),
+        bearer_token: HTTPAuthorizationCredentials | None = Depends(bearer)
     ):
-        token = self._verify_tokens(auth_token)
+
+
+        token = self._verify_tokens(auth_token, bearer_token)
+        
         token = service.decode_token(token)
 
-        if not await self.check(token):
-            raise BackendException(http_status.HTTP_403_FORBIDDEN, "Access Denied", "You don`t have access to this resource")
-        return token
+        check = await self.check(token)
+
+        if check:
+            return token
+        
+        raise BackendException(http_status.HTTP_403_FORBIDDEN, "Access Denied", "You don`t have access to this resource")
+        
 
 
 class _OrPermissionCheck(Authorization):

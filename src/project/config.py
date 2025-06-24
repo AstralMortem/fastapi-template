@@ -1,24 +1,27 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn
 from pathlib import Path
 
 
+
 class Settings(BaseSettings):
-    DEBUG: bool = False
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
+
+    DEBUG: bool = True
 
     GLOBAL_API_PREFIX: str = "/api"
     LOGIN_URL_ENDPOINT: str = "/api/v1/auth/login"
 
     # DB
-    DATABASE_URL: PostgresDsn | str = "sqlite+aiosqlite:///./test.db"
+    DATABASE_URL: PostgresDsn | str = ""
     DEFAULT_USER_IS_ACTIVE: bool = True
     DEFAULT_USER_IS_VERIFIED: bool = False
     DEFAULT_USER_ROLE_ID: int = 1
 
     # AUTH
     LOGIN_FIELDS: list[str] = ["email"]
-    ALLOW_INACIVE_USER_LOGIN: bool = False
-    ALLOW_UNVERIFIED_USER_LOGIN: bool = False
+    ALLOW_INACIVE_USER_LOGIN: bool = True
+    ALLOW_UNVERIFIED_USER_LOGIN: bool = True
 
     # JWT
     SECRET_KEY: str = ""
