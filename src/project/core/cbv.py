@@ -222,8 +222,9 @@ class View:
         async def new_func(*args, **kwargs):
             kwargs.pop('_', None)
             return await func(*args, **kwargs)
-
+            
         # return with_signature(new_signature)(func)
+        new_func.__name__ = func.__name__
         return new_func
 
     @classmethod

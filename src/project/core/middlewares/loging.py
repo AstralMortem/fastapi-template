@@ -15,7 +15,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         method = self._color_method(request.method)
         status = self._color_status(response.status_code)
-        url = f"{request.url.path}" + f"?{request.url.query}" if request.url.query else None
+        url = f"{request.url.path}" + (f"?{request.url.query}" if request.url.query else '')
         if request.client:
             client_ip = request.client.host
 
