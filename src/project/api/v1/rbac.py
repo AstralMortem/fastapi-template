@@ -9,7 +9,8 @@ from project.schemas import (
     PermissionRead,
     PermissionUpdate,
 )
-
+from project.schemas.filters.rbac import RoleFilter, PermissionFilter
+from fastapi_filter import FilterDepends
 
 class RoleView(View):
     prefix = "/roles"
@@ -24,8 +25,8 @@ class RoleView(View):
         return await self.service.get(role_id)
 
     @View.get("/", response_model=Page[RoleRead])
-    async def get_list_of_roles(self, pagination: PaginationDep):
-        return await self.service.get_many(pagination)
+    async def get_list_of_roles(self, pagination: PaginationDep, filter: RoleFilter = FilterDepends(RoleFilter)):
+        return await self.service.get_many(pagination, filter)
 
     @View.post("/", response_model=RoleRead)
     async def create_role(self, role: RoleCreate):
@@ -53,8 +54,8 @@ class PermissionView(View):
         return await self.service.get(permission_id)
 
     @View.get("/", response_model=Page[PermissionRead])
-    async def get_list_of_permissions(self, pagination: PaginationDep):
-        return await self.service.get_many(pagination)
+    async def get_list_of_permissions(self, pagination: PaginationDep, filter: PermissionFilter = FilterDepends(PermissionFilter)):
+        return await self.service.get_many(pagination, filter)
 
     @View.post("/", response_model=PermissionRead)
     async def create_permission(self, permission: PermissionCreate):
